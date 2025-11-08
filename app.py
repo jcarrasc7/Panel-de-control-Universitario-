@@ -24,7 +24,7 @@ col2.metric("Retention Avg (%)", f"{df_f['Retention Rate (%)'].mean():.1f}%")
 col3.metric("Satisfaction Avg (%)", f"{df_f['Student Satisfaction (%)'].mean():.1f}%")
 
 #  Graph  1: Retention trend
-st.subheader("Tendencia Retention Rate (%) for Year")
+st.subheader("Retention Rate Trend (%) for Year")
 fig1, ax1 = plt.subplots()
 sns.lineplot(data=df.groupby("Year")["Retention Rate (%)"].mean().reset_index(),
              x="Year", y="Retention Rate (%)", marker="o", color="royalblue", ax=ax1)
