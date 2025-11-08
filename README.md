@@ -37,5 +37,5 @@ members: Juan Carrascal (10032) - Karl Luckert Heinz (10919) - Karolaith Orozco 
 
 
 ## Links
-GitHub Repository: https://github.com/jcarrasc7/Panel-de-control-Universidad-.git
-Streamlit Dashboard: https://cetrbh4mvbzarfqxzud6ry.streamlit.app/
+GitHub Repository: https://github.com/jcarrasc7/Panel-de-control-Universitario-.git
+Streamlit Dashboard: https://dwnicyhizwudv52qfjd6xo.streamlit.app/
