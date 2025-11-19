@@ -3,97 +3,65 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Maain panel configuartion
 st.set_page_config(page_title="University Dashboard", layout="wide")
-st.title(" University Data Dashboard")
+st.title("University Data Dashboard")
 
-# the CSV file is loaded
 df = pd.read_csv("university_student_data (2).csv")
+df["Year"] = df["Year"].astype(int)
 
-# we create a interactive filters are created
 st.sidebar.header("Filters")
-year = st.sidebar.selectbox("Year", sorted(df["Year"].unique()))
+years = st.sidebar.multiselect("Year(s)", sorted(df["Year"].unique()), default=sorted(df["Year"].unique()))
 terms = st.sidebar.multiselect("Term(s)", df["Term"].unique(), default=df["Term"].unique())
-df_f = df[(df["Year"] == year) & (df["Term"].isin(terms))]
 
-# KPIs
+df_f = df[(df["Year"].isin(years)) & (df["Term"].isin(terms))]
+df_f["Year"] = df_f["Year"].astype(int)
+
 col1, col2, col3 = st.columns(3)
 col1.metric("Applications", int(df_f["Applications"].sum()))
 col2.metric("Retention Avg (%)", f"{df_f['Retention Rate (%)'].mean():.1f}%")
 col3.metric("Satisfaction Avg (%)", f"{df_f['Student Satisfaction (%)'].mean():.1f}%")
 
-#  Graph  1: Retention trend
-st.subheader("Retention Rate Trend (%) for Year")
+st.subheader("Retention Rate Trend (%)")
+ret_year = df_f.groupby("Year")["Retention Rate (%)"].mean().reset_index()
+ret_year["Year"] = ret_year["Year"].astype(int)
 
-# 🔧 FIX: Convert Year to string to avoid weird 1920 ticks
-df_ret_year = df_f.groupby("Year")["Retention Rate (%)"].mean().reset_index()
-df_ret_year["Year"] = df_ret_year["Year"].astype(str)
-
-fig1, ax1 = plt.subplots()
-sns.lineplot(
-    data=df_ret_year,
-    x="Year", 
-    y="Retention Rate (%)", 
-    marker="o", 
-    color="royalblue", 
-    ax=ax1
-)
-ax1.grid(True, linestyle="--", alpha=0.6)
+fig1, ax1 = plt.subplots(figsize=(6, 3))
+sns.lineplot(data=ret_year, x="Year", y="Retention Rate (%)", marker="o", ax=ax1)
+ax1.set_xticks(ret_year["Year"])
+ax1.set_xticklabels(ret_year["Year"])
+ax1.grid(True, linestyle="--", alpha=0.5)
+plt.tight_layout()
 st.pyplot(fig1)
 
-# Graph 2: Student Satisfaction by Year
-st.subheader("Student Satisfaction (%) for Year")
+st.subheader("Average Student Satisfaction (%)")
+sat_year = df_f.groupby("Year")["Student Satisfaction (%)"].mean().reset_index()
+sat_year["Year"] = sat_year["Year"].astype(int)
 
-# 🔧 FIX: Convert Year to string for barplot too
-df_sat_year = df_f.groupby("Year")["Student Satisfaction (%)"].mean().reset_index()
-df_sat_year["Year"] = df_sat_year["Year"].astype(str)
-
-fig2, ax2 = plt.subplots()
-sns.barplot(
-    data=df_sat_year,
-    x="Year", 
-    y="Student Satisfaction (%)", 
-    hue="Year",
-    palette="Blues_d", 
-    dodge=False, 
-    legend=False, 
-    ax=ax2
-)
-ax2.set_ylim(0,100)
-ax2.grid(axis="y", linestyle="--", alpha=0.6)
+fig2, ax2 = plt.subplots(figsize=(6, 3))
+sns.barplot(data=sat_year, x=sat_year["Year"].astype(str), y="Student Satisfaction (%)", ax=ax2)
+ax2.set_xticks(range(len(sat_year)))
+ax2.set_xticklabels(sat_year["Year"])
+ax2.set_ylim(0, 100)
+ax2.grid(axis="y", linestyle="--", alpha=0.5)
+plt.tight_layout()
 st.pyplot(fig2)
 
-# Graph 3: Enrollment distribution between Spring and Fall
 st.subheader("Enrollment distribution between Spring and Fall")
+fac_cols = [c for c in df.columns if "Enrolled" in c and "Total" not in c]
+df_f["Total Enrolled"] = df_f[fac_cols].sum(axis=1)
 
-# the Total Enrolled column is calculated based on the data
-faculties = [c for c in df_f.columns if "Enrolled" in c and "Total" not in c]
-if faculties:
-    df_f["Total Enrolled"] = df_f[faculties].sum(axis=1)
-else:
-    st.error("No columns found with 'Enrolled'")
+term_group = df_f.groupby("Term", as_index=False)["Total Enrolled"].sum()
 
-# Group by term (Spring/Fall)
-comp_term = df_f.groupby("Term", as_index=False)["Total Enrolled"].sum()
-
-# Validate that data exists
-if not comp_term.empty and comp_term["Total Enrolled"].sum() > 0:
-    fig3, ax3 = plt.subplots()
-    ax3.pie(
-        comp_term["Total Enrolled"],
-        labels=comp_term["Term"],
-        autopct="%1.1f%%",
-        startangle=90,
-        colors=sns.color_palette("pastel")
-    )
+if not term_group.empty:
+    fig3, ax3 = plt.subplots(figsize=(4, 4))
+    ax3.pie(term_group["Total Enrolled"], labels=term_group["Term"], autopct="%1.1f%%", startangle=90)
     st.pyplot(fig3)
 else:
-    st.warning("No data available for the selected filters")
+    st.warning("No data available for the selected filters.")
 
-# Table 4: Filtereed data according to the selected criteria
-# We include this small table as part of the dashboard to display the filtered data in detail
-st.subheader("Filtered data according to the selected criteria")
+st.subheader("Filtered Data")
 st.dataframe(df_f, use_container_width=True)
+
 
 
 
