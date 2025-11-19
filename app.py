@@ -21,32 +21,31 @@ col1.metric("Applications", int(df_f["Applications"].sum()))
 col2.metric("Retention Avg (%)", f"{df_f['Retention Rate (%)'].mean():.1f}%")
 col3.metric("Satisfaction Avg (%)", f"{df_f['Student Satisfaction (%)'].mean():.1f}%")
 
-# GRAPH 1
 st.subheader("Retention Rate Trend (%)")
 ret_year = df_f.groupby("Year")["Retention Rate (%)"].mean().reset_index()
 ret_year["Year"] = ret_year["Year"].astype(int)
 
 fig1, ax1 = plt.subplots(figsize=(6, 3))
 sns.lineplot(data=ret_year, x="Year", y="Retention Rate (%)", marker="o", ax=ax1)
+ax1.set_xticks(ret_year["Year"])
+ax1.set_xticklabels(ret_year["Year"])
 ax1.grid(True, linestyle="--", alpha=0.5)
-plt.xticks(rotation=45, fontsize=9)
 plt.tight_layout()
 st.pyplot(fig1)
 
-# GRAPH 2
 st.subheader("Average Student Satisfaction (%)")
 sat_year = df_f.groupby("Year")["Student Satisfaction (%)"].mean().reset_index()
 sat_year["Year"] = sat_year["Year"].astype(int)
 
 fig2, ax2 = plt.subplots(figsize=(6, 3))
 sns.barplot(data=sat_year, x="Year", y="Student Satisfaction (%)", ax=ax2)
+ax2.set_xticks(sat_year["Year"])
+ax2.set_xticklabels(sat_year["Year"])
 ax2.set_ylim(0, 100)
 ax2.grid(axis="y", linestyle="--", alpha=0.5)
-plt.xticks(rotation=45, fontsize=9)
 plt.tight_layout()
 st.pyplot(fig2)
 
-# GRAPH 3
 st.subheader("Enrollment distribution between Spring and Fall")
 fac_cols = [c for c in df.columns if "Enrolled" in c and "Total" not in c]
 df_f["Total Enrolled"] = df_f[fac_cols].sum(axis=1)
@@ -62,6 +61,7 @@ else:
 
 st.subheader("Filtered Data")
 st.dataframe(df_f, use_container_width=True)
+
 
 
 
