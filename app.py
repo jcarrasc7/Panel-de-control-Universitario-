@@ -25,41 +25,47 @@ col2.metric("Retention Avg (%)", f"{df_f['Retention Rate (%)'].mean():.1f}%")
 col3.metric("Satisfaction Avg (%)", f"{df_f['Student Satisfaction (%)'].mean():.1f}%")
 
 # ===========
-# GRAPH 1 — Retention Trend (DYNAMIC)
+# GRAPH 1 — Retention Trend (ONLY SELECTED YEAR)
 # ===========
-st.subheader("Retention Rate Trend (%) for Year")
+st.subheader("Retention Rate Trend (%) for Selected Year")
 
-df_ret_year = df[df["Term"].isin(terms)]      # <-- dinámico según term
-df_ret_year = df_ret_year.groupby("Year")["Retention Rate (%)"].mean().reset_index()
+df_ret_year = df[(df["Year"] == year) & (df["Term"].isin(terms))]
 
 fig1, ax1 = plt.subplots()
-sns.lineplot(data=df_ret_year, x="Year", y="Retention Rate (%)",
-             marker="o", color="royalblue", ax=ax1)
+sns.lineplot(
+    data=df_ret_year,
+    x="Term",
+    y="Retention Rate (%)",
+    marker="o",
+    color="royalblue",
+    ax=ax1
+)
 
+ax1.set_title(f"Retention Rate (%) — Year {year}")
 ax1.grid(True, linestyle="--", alpha=0.6)
 st.pyplot(fig1)
 
 # ===========
-# GRAPH 2 — Satisfaction (DYNAMIC)
+# GRAPH 2 — Satisfaction (ONLY SELECTED YEAR)
 # ===========
-st.subheader("Student Satisfaction (%) for Year")
+st.subheader("Student Satisfaction (%) for Selected Year")
 
-df_sat_year = df[df["Term"].isin(terms)]    # <-- dinámico
-df_sat_year = df_sat_year.groupby("Year")["Student Satisfaction (%)"].mean().reset_index()
+df_sat_year = df[(df["Year"] == year) & (df["Term"].isin(terms))]
 
 fig2, ax2 = plt.subplots()
 sns.barplot(
     data=df_sat_year,
-    x="Year",
+    x="Term",
     y="Student Satisfaction (%)",
-    hue="Year",
-    palette="Blues_d",
+    hue="Term",
     dodge=False,
+    palette="Blues_d",
     legend=False,
     ax=ax2
 )
 
 ax2.set_ylim(0, 100)
+ax2.set_title(f"Student Satisfaction (%) — Year {year}")
 ax2.grid(axis="y", linestyle="--", alpha=0.6)
 st.pyplot(fig2)
 
@@ -94,4 +100,5 @@ else:
 # ===========
 st.subheader("Filtered data according to the selected criteria")
 st.dataframe(df_f, use_container_width=True)
+
 
