@@ -25,47 +25,47 @@ col2.metric("Retention Avg (%)", f"{df_f['Retention Rate (%)'].mean():.1f}%")
 col3.metric("Satisfaction Avg (%)", f"{df_f['Student Satisfaction (%)'].mean():.1f}%")
 
 # ===========
-# GRAPH 1 — Retention Trend (ONLY SELECTED YEAR)
+# GRAPH 1 — Retention Trend (ALL YEARS, FILTER BY TERM)
 # ===========
-st.subheader("Retention Rate Trend (%) for Selected Year")
+st.subheader("Retention Rate Trend (%) (2015–2020)")
 
-df_ret_year = df[(df["Year"] == year) & (df["Term"].isin(terms))]
+df_ret_year = df[df["Term"].isin(terms)]   # <-- se filtran TERM como en tu imagen original
+df_ret_year = df_ret_year.groupby("Year")["Retention Rate (%)"].mean().reset_index()
 
 fig1, ax1 = plt.subplots()
 sns.lineplot(
     data=df_ret_year,
-    x="Term",
+    x="Year",
     y="Retention Rate (%)",
     marker="o",
     color="royalblue",
     ax=ax1
 )
 
-ax1.set_title(f"Retention Rate (%) — Year {year}")
 ax1.grid(True, linestyle="--", alpha=0.6)
 st.pyplot(fig1)
 
 # ===========
-# GRAPH 2 — Satisfaction (ONLY SELECTED YEAR)
+# GRAPH 2 — Satisfaction (ALL YEARS, FILTER BY TERM)
 # ===========
-st.subheader("Student Satisfaction (%) for Selected Year")
+st.subheader("Student Satisfaction (%) (2015–2020)")
 
-df_sat_year = df[(df["Year"] == year) & (df["Term"].isin(terms))]
+df_sat_year = df[df["Term"].isin(terms)]
+df_sat_year = df_sat_year.groupby("Year")["Student Satisfaction (%)"].mean().reset_index()
 
 fig2, ax2 = plt.subplots()
 sns.barplot(
     data=df_sat_year,
-    x="Term",
+    x="Year",
     y="Student Satisfaction (%)",
-    hue="Term",
-    dodge=False,
+    hue="Year",
     palette="Blues_d",
+    dodge=False,
     legend=False,
     ax=ax2
 )
 
 ax2.set_ylim(0, 100)
-ax2.set_title(f"Student Satisfaction (%) — Year {year}")
 ax2.grid(axis="y", linestyle="--", alpha=0.6)
 st.pyplot(fig2)
 
@@ -76,29 +76,5 @@ st.subheader("Enrollment distribution between Spring and Fall")
 
 faculties = [c for c in df_f.columns if "Enrolled" in c and "Total" not in c]
 if faculties:
-    df_f["Total Enrolled"] = df_f[faculties].sum(axis=1)
-else:
-    st.error("No columns found with 'Enrolled'")
-
-comp_term = df_f.groupby("Term", as_index=False)["Total Enrolled"].sum()
-
-if not comp_term.empty and comp_term["Total Enrolled"].sum() > 0:
-    fig3, ax3 = plt.subplots()
-    ax3.pie(
-        comp_term["Total Enrolled"],
-        labels=comp_term["Term"],
-        autopct="%1.1f%%",
-        startangle=90,
-        colors=sns.color_palette("pastel")
-    )
-    st.pyplot(fig3)
-else:
-    st.warning("No data available for the selected filters")
-
-# ===========
-# TABLE — Filtered Data
-# ===========
-st.subheader("Filtered data according to the selected criteria")
-st.dataframe(df_f, use_container_width=True)
-
+    df_f["Tot]()_
 
