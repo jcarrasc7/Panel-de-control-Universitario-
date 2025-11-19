@@ -24,9 +24,14 @@ col3.metric("Satisfaction Avg (%)", f"{df_f['Student Satisfaction (%)'].mean():.
 
 #  Graph  1: Retention trend
 st.subheader("Retention Rate Trend (%) for Year")
+
+# 🔧 FIX: Convert Year to string to avoid weird 1920 ticks
+df_ret_year = df_f.groupby("Year")["Retention Rate (%)"].mean().reset_index()
+df_ret_year["Year"] = df_ret_year["Year"].astype(str)
+
 fig1, ax1 = plt.subplots()
 sns.lineplot(
-    data=df_f.groupby("Year")["Retention Rate (%)"].mean().reset_index(),
+    data=df_ret_year,
     x="Year", 
     y="Retention Rate (%)", 
     marker="o", 
@@ -38,9 +43,14 @@ st.pyplot(fig1)
 
 # Graph 2: Student Satisfaction by Year
 st.subheader("Student Satisfaction (%) for Year")
+
+# 🔧 FIX: Convert Year to string for barplot too
+df_sat_year = df_f.groupby("Year")["Student Satisfaction (%)"].mean().reset_index()
+df_sat_year["Year"] = df_sat_year["Year"].astype(str)
+
 fig2, ax2 = plt.subplots()
 sns.barplot(
-    data=df_f.groupby("Year")["Student Satisfaction (%)"].mean().reset_index(),
+    data=df_sat_year,
     x="Year", 
     y="Student Satisfaction (%)", 
     hue="Year",
@@ -84,9 +94,6 @@ else:
 # We include this small table as part of the dashboard to display the filtered data in detail
 st.subheader("Filtered data according to the selected criteria")
 st.dataframe(df_f, use_container_width=True)
-
-
-
 
 
 
