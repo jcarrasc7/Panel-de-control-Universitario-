@@ -9,7 +9,6 @@ st.title(" University Data Dashboard")
 
 # the CSV file is loaded
 df = pd.read_csv("university_student_data (2).csv")
-df["Year"] = df["Year"].astype(int)
 
 # we create a interactive filters are created
 st.sidebar.header("Filters")
@@ -25,23 +24,31 @@ col3.metric("Satisfaction Avg (%)", f"{df_f['Student Satisfaction (%)'].mean():.
 
 #  Graph  1: Retention trend
 st.subheader("Retention Rate Trend (%) for Year")
-ret_agg = df[df["Term"].isin(terms)].groupby("Year")["Retention Rate (%)"].mean().reset_index()
-
 fig1, ax1 = plt.subplots()
-sns.lineplot(data=ret_agg, x="Year", y="Retention Rate (%)", marker="o", ax=ax1)
-ax1.set_xticks(ret_agg["Year"])
-ax1.set_xticklabels(ret_agg["Year"])
+sns.lineplot(
+    data=df_f.groupby("Year")["Retention Rate (%)"].mean().reset_index(),
+    x="Year", 
+    y="Retention Rate (%)", 
+    marker="o", 
+    color="royalblue", 
+    ax=ax1
+)
 ax1.grid(True, linestyle="--", alpha=0.6)
 st.pyplot(fig1)
 
 # Graph 2: Student Satisfaction by Year
 st.subheader("Student Satisfaction (%) for Year")
-sat_agg = df[df["Term"].isin(terms)].groupby("Year")["Student Satisfaction (%)"].mean().reset_index()
-
 fig2, ax2 = plt.subplots()
-sns.barplot(data=sat_agg, x=sat_agg["Year"].astype(str), y="Student Satisfaction (%)", ax=ax2)
-ax2.set_xticks(range(len(sat_agg)))
-ax2.set_xticklabels(sat_agg["Year"])
+sns.barplot(
+    data=df_f.groupby("Year")["Student Satisfaction (%)"].mean().reset_index(),
+    x="Year", 
+    y="Student Satisfaction (%)", 
+    hue="Year",
+    palette="Blues_d", 
+    dodge=False, 
+    legend=False, 
+    ax=ax2
+)
 ax2.set_ylim(0,100)
 ax2.grid(axis="y", linestyle="--", alpha=0.6)
 st.pyplot(fig2)
@@ -77,6 +84,7 @@ else:
 # We include this small table as part of the dashboard to display the filtered data in detail
 st.subheader("Filtered data according to the selected criteria")
 st.dataframe(df_f, use_container_width=True)
+
 
 
 
