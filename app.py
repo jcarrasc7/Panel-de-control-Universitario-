@@ -24,7 +24,7 @@ st.subheader("Retention Rate Trend (%)")
 
 ret_year = df_f.groupby("Year")["Retention Rate (%)"].mean().reset_index()
 
-fig1, ax1 = plt.subplots()
+fig1, ax1 = plt.subplots(figsize=(6, 3))
 sns.lineplot(
     data=ret_year,
     x="Year",
@@ -33,6 +33,8 @@ sns.lineplot(
     ax=ax1
 )
 ax1.grid(True, linestyle="--", alpha=0.5)
+plt.xticks(rotation=45, fontsize=9)
+plt.tight_layout()
 st.pyplot(fig1)
 
 # GRAPH 2 - Satisfaction per selected years
@@ -40,7 +42,7 @@ st.subheader("Average Student Satisfaction (%)")
 
 sat_year = df_f.groupby("Year")["Student Satisfaction (%)"].mean().reset_index()
 
-fig2, ax2 = plt.subplots()
+fig2, ax2 = plt.subplots(figsize=(6, 3))
 sns.barplot(
     data=sat_year,
     x="Year",
@@ -49,6 +51,8 @@ sns.barplot(
 )
 ax2.set_ylim(0, 100)
 ax2.grid(axis="y", linestyle="--", alpha=0.5)
+plt.xticks(rotation=45, fontsize=9)
+plt.tight_layout()
 st.pyplot(fig2)
 
 # GRAPH 3 - Term Distribution
@@ -60,7 +64,7 @@ df_f["Total Enrolled"] = df_f[fac_cols].sum(axis=1)
 term_group = df_f.groupby("Term", as_index=False)["Total Enrolled"].sum()
 
 if not term_group.empty:
-    fig3, ax3 = plt.subplots()
+    fig3, ax3 = plt.subplots(figsize=(4, 4))
     ax3.pie(
         term_group["Total Enrolled"],
         labels=term_group["Term"],
@@ -73,4 +77,5 @@ else:
 
 st.subheader("Filtered Data")
 st.dataframe(df_f, use_container_width=True)
+
 
