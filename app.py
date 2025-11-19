@@ -38,8 +38,8 @@ sat_year = df_f.groupby("Year")["Student Satisfaction (%)"].mean().reset_index()
 sat_year["Year"] = sat_year["Year"].astype(int)
 
 fig2, ax2 = plt.subplots(figsize=(6, 3))
-sns.barplot(data=sat_year, x="Year", y="Student Satisfaction (%)", ax=ax2)
-ax2.set_xticks(sat_year["Year"])
+sns.barplot(data=sat_year, x=sat_year["Year"].astype(str), y="Student Satisfaction (%)", ax=ax2)
+ax2.set_xticks(range(len(sat_year)))
 ax2.set_xticklabels(sat_year["Year"])
 ax2.set_ylim(0, 100)
 ax2.grid(axis="y", linestyle="--", alpha=0.5)
@@ -61,6 +61,7 @@ else:
 
 st.subheader("Filtered Data")
 st.dataframe(df_f, use_container_width=True)
+
 
 
 
