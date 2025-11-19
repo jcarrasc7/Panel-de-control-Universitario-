@@ -25,36 +25,31 @@ col2.metric("Retention Avg (%)", f"{df_f['Retention Rate (%)'].mean():.1f}%")
 col3.metric("Satisfaction Avg (%)", f"{df_f['Student Satisfaction (%)'].mean():.1f}%")
 
 # ==========================================
-# GRAPH 1 — Retention Rate Trend (DYNAMIC BY TERM)
+# GRAPH 1 — Retention Trend (DYNAMIC BY TERMS, ALL YEARS)
 # ==========================================
-st.subheader("Retention Rate Trend (%) (Dynamic by Term)")
+st.subheader("Retention Rate Trend (%) for Year")
 
-df_ret = df[df["Term"].isin(terms)]     # <-- FILTRO CORRECTO
-df_ret = df_ret.groupby("Year")["Retention Rate (%)"].mean().reset_index()
+df_ret_year = df[df["Term"].isin(terms)]        # <── EXACTAMENTE COMO TU CÓDIGO QUE FUNCIONABA
+df_ret_year = df_ret_year.groupby("Year")["Retention Rate (%)"].mean().reset_index()
 
 fig1, ax1 = plt.subplots()
-sns.lineplot(
-    data=df_ret,
-    x="Year",
-    y="Retention Rate (%)",
-    marker="o",
-    color="royalblue",
-    ax=ax1
-)
+sns.lineplot(data=df_ret_year, x="Year", y="Retention Rate (%)",
+             marker="o", color="royalblue", ax=ax1)
+
 ax1.grid(True, linestyle="--", alpha=0.6)
 st.pyplot(fig1)
 
 # ==========================================
-# GRAPH 2 — Student Satisfaction Trend (DYNAMIC BY TERM)
+# GRAPH 2 — Satisfaction (DYNAMIC BY TERMS, ALL YEARS)
 # ==========================================
-st.subheader("Student Satisfaction (%) (Dynamic by Term)")
+st.subheader("Student Satisfaction (%) for Year")
 
-df_sat = df[df["Term"].isin(terms)]     # <-- FILTRO CORRECTO
-df_sat = df_sat.groupby("Year")["Student Satisfaction (%)"].mean().reset_index()
+df_sat_year = df[df["Term"].isin(terms)]        # <── MISMA LÓGICA DEL CÓDIGO BASE
+df_sat_year = df_sat_year.groupby("Year")["Student Satisfaction (%)"].mean().reset_index()
 
 fig2, ax2 = plt.subplots()
 sns.barplot(
-    data=df_sat,
+    data=df_sat_year,
     x="Year",
     y="Student Satisfaction (%)",
     hue="Year",
@@ -63,7 +58,8 @@ sns.barplot(
     legend=False,
     ax=ax2
 )
-ax2.set_ylim(0,100)
+
+ax2.set_ylim(0, 100)
 ax2.grid(axis="y", linestyle="--", alpha=0.6)
 st.pyplot(fig2)
 
@@ -99,4 +95,5 @@ else:
 # Table — Filtered data
 st.subheader("Filtered data according to the selected criteria")
 st.dataframe(df_f, use_container_width=True)
+
 
