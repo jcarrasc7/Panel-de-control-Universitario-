@@ -10,6 +10,9 @@ st.title(" University Data Dashboard")
 # Load CSV file
 df = pd.read_csv("university_student_data (2).csv")
 
+# Ensure Year is INT to avoid weird ticks like 1920, 1915
+df["Year"] = df["Year"].astype(int)
+
 # Sidebar filters
 st.sidebar.header("Filters")
 year = st.sidebar.selectbox("Year", sorted(df["Year"].unique()))
@@ -33,11 +36,10 @@ st.subheader(f"Retention Rate Trend (2015 → {year})")
 df_ret_year = df[
     (df["Year"] <= year) & 
     (df["Term"].isin(terms))
-]
-
-df_ret_year = df_ret_year.groupby("Year")["Retention Rate (%)"].mean().reset_index()
+].groupby("Year")["Retention Rate (%)"].mean().reset_index()
 
 fig1, ax1 = plt.subplots()
+
 sns.lineplot(
     data=df_ret_year,
     x="Year",
@@ -46,6 +48,10 @@ sns.lineplot(
     color="royalblue",
     ax=ax1
 )
+
+# FIX: force correct ticks (NO YEARS INVENTADOS)
+ax1.set_xticks(df_ret_year["Year"])
+ax1.set_xticklabels(df_ret_year["Year"])
 
 ax1.grid(True, linestyle="--", alpha=0.6)
 st.pyplot(fig1)
@@ -59,11 +65,10 @@ st.subheader(f"Student Satisfaction (2015 → {year})")
 df_sat_year = df[
     (df["Year"] <= year) & 
     (df["Term"].isin(terms))
-]
-
-df_sat_year = df_sat_year.groupby("Year")["Student Satisfaction (%)"].mean().reset_index()
+].groupby("Year")["Student Satisfaction (%)"].mean().reset_index()
 
 fig2, ax2 = plt.subplots()
+
 sns.barplot(
     data=df_sat_year,
     x="Year",
@@ -75,12 +80,16 @@ sns.barplot(
     ax=ax2
 )
 
+# FIX: correct ticks
+ax2.set_xticks(df_sat_year["Year"])
+ax2.set_xticklabels(df_sat_year["Year"])
+
 ax2.set_ylim(0,100)
 ax2.grid(axis="y", linestyle="--", alpha=0.6)
 st.pyplot(fig2)
 
 # =========================================================
-# GRAPH 3 — ENROLLMENT (UNCHANGED)
+# GRAPH 3 — ENROLLMENT PIE CHART
 # =========================================================
 
 st.subheader("Enrollment distribution between Spring and Fall")
