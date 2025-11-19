@@ -83,7 +83,32 @@ st.pyplot(fig2)
 # GRAPH 3 — ENROLLMENT (UNCHANGED)
 # =========================================================
 
-st.subheader("E
+st.subheader("Enrollment distribution between Spring and Fall")
+
+faculties = [c for c in df_f.columns if "Enrolled" in c and "Total" not in c]
+if faculties:
+    df_f["Total Enrolled"] = df_f[faculties].sum(axis=1)
+else:
+    st.error("No columns found with 'Enrolled'")
+
+comp_term = df_f.groupby("Term", as_index=False)["Total Enrolled"].sum()
+
+if not comp_term.empty and comp_term["Total Enrolled"].sum() > 0:
+    fig3, ax3 = plt.subplots()
+    ax3.pie(
+        comp_term["Total Enrolled"],
+        labels=comp_term["Term"],
+        autopct="%1.1f%%",
+        startangle=90,
+        colors=sns.color_palette("pastel")
+    )
+    st.pyplot(fig3)
+else:
+    st.warning("No data available for the selected filters")
+
+# TABLE
+st.subheader("Filtered data according to the selected criteria")
+st.dataframe(df_f, use_container_width=True)
 
 
 
