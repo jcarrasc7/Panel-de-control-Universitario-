@@ -20,20 +20,24 @@ col2.metric("Retention Avg (%)", f"{df_f['Retention Rate (%)'].mean():.1f}%")
 col3.metric("Satisfaction Avg (%)", f"{df_f['Student Satisfaction (%)'].mean():.1f}%")
 
 # 1) Retention trend (DYNAMIC)
-st.subheader("Retention Rate Trend (%)")
-ret = df[df["Term"].isin(terms)].groupby("Year")["Retention Rate (%)"].mean().reset_index()
+grp_year = (df_sub.groupby('Year')
+            .apply(lambda g: wavg(g['Retention Rate (%)'], g['Enrolled']))
+            .rename("Retention_w")
+            .sort_index())
 
-fig1, ax1 = plt.subplots()
-sns.lineplot(
-    data=ret,
-    x="Year",
-    y="Retention Rate (%)",
-    marker="o",
-    color="royalblue",
-    ax=ax1
-)
-ax1.set_ylim(0, 100)
-ax1.grid(True, linestyle="--", alpha=0.6)
+fig1, ax1 = plt.subplots(figsize=(10, 5))
+x_idx = np.arange(len(grp_year.index))
+ax1.plot(x_idx, grp_year.values, marker="o", linestyle="-", color=color, linewidth=2)
+
+ax1.set_xticks(x_idx)
+ax1.set_xticklabels([str(int(y)) for y in grp_year.index])
+ax1.set_xlabel("Year")
+ax1.set_ylabel("Retention Rate (%)")
+title1 = "Weighted retention by year"
+title1 += f" · up to {year_sel}" if mode == "Cumulative up to year" else f" · year {year_sel}"
+ax1.set_title(title1)
+ax1.grid(show_grid)
+fig1.tight_layout()
 st.pyplot(fig1)
 
 # 2) Student Satisfaction (DYNAMIC)
